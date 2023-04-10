@@ -94,6 +94,31 @@ class Enrollment(models.Model):
     mode = models.CharField(max_length=5, choices=COURSE_MODES, default=AUDIT)
     rating = models.FloatField(default=5.0)
 
+class Question(models.Model):
+    question = models.CharField(max_length=200)
+    grade = models.IntegerField(default=0)
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    course = models.ManyToManyField(Course)
+
+    def is_get_score(self, selected_ids):
+       all_answers = self.choice_set.filter(is_correct=True).count()
+       selected_correct = self.choice_set.filter(is_correct=True, id__in=selected_ids).count()
+       if all_answers == selected_correct:
+           return True
+       else:
+           return False
+       
+class Choice(models.Model):
+    choice = models.CharField(max_length=200)
+    is_correct = models.BooleanField
+    question = models.ManyToManyField(Question)
+
+class Submission(models.Model):
+    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
+    choices = models.ManyToManyField(Choice)
+
+
+
 
 # <HINT> Create a Question Model with:
     # Used to persist question content for a course
