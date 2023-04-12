@@ -98,7 +98,6 @@ class Question(models.Model):
     question = models.CharField(max_length=200)
     grade = models.IntegerField(default=0)
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
-    course = models.ManyToManyField(Course)
 
     def is_get_score(self, selected_ids):
        all_answers = self.choice_set.filter(is_correct=True).count()
@@ -109,9 +108,10 @@ class Question(models.Model):
            return False
        
 class Choice(models.Model):
-    choice = models.CharField(max_length=200)
-    is_correct = models.BooleanField
-    question = models.ManyToManyField(Question)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    choice_text = models.CharField(max_length=200)
+    is_correct = models.BooleanField(default=False)
+    
 
 class Submission(models.Model):
     enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
